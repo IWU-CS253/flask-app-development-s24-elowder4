@@ -3,19 +3,62 @@
   <form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
     <dl>
       <dt>Title:
-      <dd><input type="text" size="30" name="title">
+      <dd><input type="text" size="30" name="title" required>
       <dt>Category:
-      <dd><input type="text" size="30" name="category">
+      <dd><input type="text" size="30" name="category" required>
       <dt>Text:
-      <dd><textarea name="text" rows="5" cols="40"></textarea>
+      <dd><textarea name="text" rows="5" cols="40" required></textarea>
       <dd><input type="submit" value="Share">
     </dl>
   </form>
+  <select name="categories" id="categories">
+    <option selected value>Filter By Category</option>
+    {% for entry in entries %}
+      <option value={{ entry.category }}>{{ entry.category }}</option>
+    {% endfor %}
+  </select>
   <ul class="entries">
-  {% for entry in entries %}
-    <li><h2>{{ entry.title }}</h2><h3>{{ entry.category }}</h3>{{ entry.text|safe }}</li>
-  {% else %}
-    <li><em>Unbelievable. No entries here so far</em></li>
-  {% endfor %}
+    {% for entry in entries %}
+        <li><h2>{{ entry.title }}</h2><h3>{{ entry.category }}</h3>{{ entry.text|safe }}</li>
+    {% else %}
+      <li><em>Unbelievable. No entries here so far</em></li>
+    {% endfor %}
   </ul>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => { // wait for doc to load
+      document.getElementById('categories').onchange = () => { // triggers when filter selected
+        const cat = document.querySelector('#categories').value; // get value of category selected
+        getEntries(cat); // hide or display posts based on filter
+      }
+    });
+
+    function getEntries(cat) {
+        const entries = document.querySelectorAll('.entries li'); // get all posts (or entries)
+        entries.forEach(entry => { // loop over entries
+            if (cat === "" || entry.querySelector('h3').innerHTML === cat) {
+                entry.style.display = 'block'; // display if default value is selected or entry matches filter
+            } else {
+                entry.style.display = 'none';
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => { // wait for content to load
+      const categories = document.querySelectorAll('#categories option'); // get all options from dropdown
+      getCategories(categories) // tell which options to display and which to hide
+    });
+
+    function getCategories(categories) {
+      const displayedCategories = []; // empty list to store categories displayed
+      categories.forEach(entry => {
+        if (!displayedCategories.includes(entry.value)) {
+          entry.style.display = 'block'; // display option if not already displayed
+          displayedCategories.push(entry.value);
+        }
+        else {
+          entry.style.display = 'none';
+        }
+      });
+    }
+</script>
 {% endblock %}
