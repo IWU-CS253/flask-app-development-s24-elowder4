@@ -76,10 +76,14 @@ def show_entries():
 @app.route('/add', methods=['POST'])
 def add_entry():
     db = get_db()
-    db.execute('INSERT INTO entries (title, category, text) VALUES (?, ?, ?)',
-               [request.form['title'], request.form['category'], request.form['text']])
-    db.commit()
-    flash('New entry was successfully posted')
+    if request.form['title'] and request.form['category'] and request.form['text']:
+        db.execute('INSERT INTO entries (title, category, text) VALUES (?, ?, ?)',
+                   [request.form['title'], request.form['category'], request.form['text']])
+        db.commit()
+        flash('New entry was successfully posted')
+    else:
+        flash('Entry failed: Please enter a title, category, and text in the input field')
+
     return redirect(url_for('show_entries'))
 
 
