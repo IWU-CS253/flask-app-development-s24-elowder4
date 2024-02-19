@@ -36,7 +36,7 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => { // wait for doc to load
       document.getElementById('categories').onchange = () => { // triggers when filter selected
-        const cat = document.querySelector('#categories').value; // get value of category selected
+        const cat = document.querySelector('#categories').value.toLowerCase(); // get value of category selected- lowercase
         getEntries(cat); // hide or display posts based on filter
       }
     });
@@ -44,8 +44,8 @@
     function getEntries(cat) {
         const entries = document.querySelectorAll('.entries li'); // get all posts (or entries)
         entries.forEach(entry => { // loop over entries
-            if (cat === "" || entry.querySelector('h3').innerHTML === cat) {
-                entry.style.display = 'block'; // display if default value is selected or entry matches filter
+            if (cat === "" || entry.querySelector('h3').innerHTML.toLowerCase() === cat) { // filter is not case-sensitive
+                entry.style.display = 'block'; // display if default value is selected or if entry matches filter
             } else {
                 entry.style.display = 'none';
             }
@@ -60,9 +60,9 @@
     function getCategories(categories) {
       const displayedCategories = []; // empty list to store categories displayed
       categories.forEach(entry => {
-        if (!displayedCategories.includes(entry.value)) {
+        if (!displayedCategories.includes(entry.value.toLowerCase())) {
           entry.style.display = 'block'; // display option if not already displayed
-          displayedCategories.push(entry.value);
+          displayedCategories.push(entry.value.toLowerCase()); // not case-sensitive i.e. (Category = category)
         }
         else {
           entry.style.display = 'none';
