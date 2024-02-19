@@ -76,8 +76,18 @@ def show_entries():
 @app.route('/add', methods=['POST'])
 def add_entry():
     db = get_db()
-    db.execute('insert into entries (title, category, text) values (?, ?, ?)',
+    db.execute('INSERT INTO entries (title, category, text) VALUES (?, ?, ?)',
                [request.form['title'], request.form['category'], request.form['text']])
     db.commit()
     flash('New entry was successfully posted')
+    return redirect(url_for('show_entries'))
+
+
+@app.route('/delete', methods=['POST'])
+def delete_entry():
+    db = get_db()
+    db.execute('DELETE FROM entries WHERE title = ? AND category = ? AND text = ?',
+               [request.form['title'], request.form['category'], request.form['text']])
+    db.commit()
+    flash('Entry was successfully deleted')
     return redirect(url_for('show_entries'))
