@@ -2,23 +2,26 @@
 {% block body %}
   <form action="{{ url_for('add_entry') }}" method="post" class="add-entry">
     <dl>
-      <dt>Title:
-      <dd><input type="text" size="30" name="title" required>
-      <dt>Category:
-      <dd><input type="text" size="30" name="category" required>
-      <dt>Text:
-      <dd><textarea name="text" rows="5" cols="40" required></textarea>
-      <dd><input type="submit" value="Share">
+      <dt>Title:</dt>
+      <dd><input type="text" size="30" name="title" required></dd>
+      <dt>Category:</dt>
+      <dd><input type="text" size="30" name="category" required></dd>
+      <dt>Text:</dt>
+      <dd><textarea name="text" rows="5" cols="40" required></textarea></dd>
+      <dd><input type="submit" value="Share"></dd>
     </dl>
   </form>
-  <select name="categories" id="categories">
-    <option selected value>Filter By Category</option>
-    {% for entry in entries %}
-      <option value={{ entry.category }}>{{ entry.category }}</option>
-    {% endfor %}
-  </select>
+  <form action="{{ url_for('show_entries') }}" method="get" id="filter">
+    <select name="filter" id="categories">
+      <option selected value disabled>Filter By Category</option>
+      <option value="noFilter">Show All</option>
+      {% for entry in entries %}
+      <option value="{{ entry.category }}">{{ entry.category }}</option>
+      {% endfor %}
+    </select>
+  </form>
   <ul class="entries">
-    {% for entry in entries %}
+    {% for entry in filtered_entries %}
         <li>
           <form action="{{ url_for('delete_entry') }}" method="post" class="delete-entry">
             <input type="hidden" name="title" value="{{ entry.title }}">
@@ -34,40 +37,10 @@
     {% endfor %}
   </ul>
   <script>
-    document.addEventListener('DOMContentLoaded', () => { // wait for doc to load
-      document.getElementById('categories').onchange = () => { // triggers when filter selected
-        const cat = document.querySelector('#categories').value.toLowerCase(); // get value of category selected- lowercase
-        getEntries(cat); // hide or display posts based on filter
-      }
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('categories').addEventListener('change', function() {
+        document.getElementById('filter').submit();
     });
-
-    function getEntries(cat) {
-        const entries = document.querySelectorAll('.entries li'); // get all posts (or entries)
-        entries.forEach(entry => { // loop over entries
-            if (cat === "" || entry.querySelector('h3').innerHTML.toLowerCase() === cat) { // filter is not case-sensitive
-                entry.style.display = 'block'; // display if default value is selected or if entry matches filter
-            } else {
-                entry.style.display = 'none';
-            }
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', () => { // wait for content to load
-      const categories = document.querySelectorAll('#categories option'); // get all options from dropdown
-      getCategories(categories) // tell which options to display and which to hide
-    });
-
-    function getCategories(categories) {
-      const displayedCategories = []; // empty list to store categories displayed
-      categories.forEach(entry => {
-        if (!displayedCategories.includes(entry.value.toLowerCase())) {
-          entry.style.display = 'block'; // display option if not already displayed
-          displayedCategories.push(entry.value.toLowerCase()); // not case-sensitive i.e. (Category = category)
-        }
-        else {
-          entry.style.display = 'none';
-        }
-      });
-    }
-</script>
+  });
+  </script>
 {% endblock %}
