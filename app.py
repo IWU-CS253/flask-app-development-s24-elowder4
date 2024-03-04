@@ -65,12 +65,22 @@ def close_db(error):
         g.sqlite_db.close()
 
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def show_entries():
     db = get_db()
+    filter = request.args.get('filter')
     cur = db.execute('SELECT title, category, text FROM entries ORDER BY id DESC')
     entries = cur.fetchall()
-    return render_template('show_entries.html', entries=entries)
+    filtered_entries = []
+
+    if not filter or filter == 'Filter By Category' or filter == 'noFilter':
+        filtered_entries = entries
+    else:
+        for entry in entries:
+            if filter == entry['category']:
+                filtered_entries.append(entry)
+
+    return render_template('show_entries.html', filtered_entries=filtered_entries, entries=entries)
 
 
 @app.route('/add', methods=['POST'])
