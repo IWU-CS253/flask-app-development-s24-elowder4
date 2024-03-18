@@ -7,7 +7,7 @@
             <div class="form-group">
                 <label for="title">Title:</label>
                 <input type="text" name="title" class="form-control" id="title" required>
-                <label for="category">Cateogry:</label>
+                <label for="category">Category:</label>
                 <input type="text" name="category" class="form-control" id="category" required>
                 <label for="text">Text:</label>
                 <textarea type="text" name="text" class="form-control" id="text" rows="5" required></textarea>
@@ -34,15 +34,19 @@
         <br>
         {% for entry in filtered_entries %}
             <li>
-                <form action="{{ url_for('delete_entry') }}" method="post" class="delete-entry">
+                <form action="{{ url_for('delete_entry') }}" method="post">
                     <input type="hidden" name="title" value="{{ entry.title }}">
                     <input type="hidden" name="category" value="{{ entry.category }}">
                     <input type="hidden" name="text" value="{{ entry.text }}">
+                    <input type="hidden" name="id" value="{{ entry.id }}">
                     <div class="panel-group">
                         <div class="panel panel-primary">
                             <div class="panel-heading">{{ entry.title }} - {{ entry.category }}</div>
                             <div class="panel-body">{{ entry.text|safe }}</div>
-                            <div class="panel-footer"><input type="submit" value="Delete" name="delete"></div>
+                            <div class="panel-footer">
+                                <input type="submit" value="Edit" name="edit">
+                                <input type="submit" value="Delete" name="delete">
+                            </div>
                         </div>
                     </div>
                 </form>
