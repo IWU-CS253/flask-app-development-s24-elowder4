@@ -69,7 +69,7 @@ def close_db(error):
 def show_entries():
     db = get_db()
     filter = request.args.get('selected_category')
-    cur = db.execute('SELECT title, category, text FROM entries ORDER BY id DESC')
+    cur = db.execute('SELECT title, category, text, id FROM entries ORDER BY id DESC')
     entries = cur.fetchall()
     filtered_entries = []
 
@@ -99,9 +99,41 @@ def add_entry():
 
 @app.route('/delete', methods=['POST'])
 def delete_entry():
-    db = get_db()
-    db.execute('DELETE FROM entries WHERE title = ? AND category = ? AND text = ?',
-               [request.form['title'], request.form['category'], request.form['text']])
-    db.commit()
-    flash('Entry was successfully deleted')
+    if request.form["edit"]:
+        return redirect(url_for('edit_entry', title=request.form['title'],
+                                category=request.form['category'], text=request.form['text'],
+                                id=request.form['id']))
+    else:
+        db = get_db()
+        db.execute('DELETE FROM entries WHERE title = ? AND category = ? AND text = ?',
+                   [request.form['title'], request.form['category'], request.form['text']])
+        db.commit()
+        flash('Entry was successfully deleted')
+
+        return redirect(url_for('show_entries'))
+
+
+@app.route('/edit', methods=['GET', 'POST'])
+def edit_entry():
+    title = request.args.get('title')
+    category = request.args.get('category')
+    text = request.args.get('text')
+    id = request.args.get('id')
+
+    return render_template('edit_entry.html',
+                           title=title, category=category, text=text, id=id)
+
+
+@app.route('/update', methods=['GET', 'POST'])
+def update_entry():
+    if request.form['title'] and request.form['category'] and request.form['text'] and request.form['id']:
+        db = get_db()
+        db.execute('UPDATE entries SET title = ?, category = ?, text = ? WHERE id = ?;',
+                   [request.form['title'], request.form['category'],
+                    request.form['text'], request.form['id']])
+        db.commit()
+        flash('Entry was successfully updated')
+    else:
+        flash('Update failed: Please enter a title, category, and text in the input field')
+
     return redirect(url_for('show_entries'))
