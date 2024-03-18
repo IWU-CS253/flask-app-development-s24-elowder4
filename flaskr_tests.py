@@ -45,13 +45,13 @@ class FlaskrTestCase(unittest.TestCase):
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
 
-        rv = self.app.get('/?filter=<Category>')
+        rv = self.app.get('/?selected_category=<Category>')
         print(rv.data)
         assert b'No entries here so far' not in rv.data
         assert b'&lt;Hello&gt;' in rv.data
         assert b'<strong>HTML</strong> allowed here' in rv.data
 
-        rb = self.app.get('/?filter=<notCategory>')
+        rb = self.app.get('/?selected_category=<notCategory>')
         assert b'No entries here so far' in rb.data
         assert b'&lt;Hello&gt;' not in rb.data
         assert b'<strong>HTML</strong> allowed here' not in rb.data
