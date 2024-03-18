@@ -68,12 +68,12 @@ def close_db(error):
 @app.route('/', methods=['GET', 'POST'])
 def show_entries():
     db = get_db()
-    filter = request.args.get('filter')
+    filter = request.args.get('selected_category')
     cur = db.execute('SELECT title, category, text FROM entries ORDER BY id DESC')
     entries = cur.fetchall()
     filtered_entries = []
 
-    if not filter or filter == 'Filter By Category' or filter == 'noFilter':
+    if not filter or filter == 'noFilter':
         filtered_entries = entries
     else:
         for entry in entries:
