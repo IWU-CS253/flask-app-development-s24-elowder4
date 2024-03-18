@@ -99,11 +99,12 @@ def add_entry():
 
 @app.route('/delete', methods=['POST'])
 def delete_entry():
-    if request.form["edit"]:
-        return redirect(url_for('edit_entry', title=request.form['title'],
+    try:
+        if request.form["edit"]:
+            return redirect(url_for('edit_entry', title=request.form['title'],
                                 category=request.form['category'], text=request.form['text'],
                                 id=request.form['id']))
-    else:
+    except:
         db = get_db()
         db.execute('DELETE FROM entries WHERE title = ? AND category = ? AND text = ?',
                    [request.form['title'], request.form['category'], request.form['text']])
