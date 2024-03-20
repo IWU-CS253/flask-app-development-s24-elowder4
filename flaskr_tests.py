@@ -31,10 +31,16 @@ class FlaskrTestCase(unittest.TestCase):
         assert b'<strong>HTML</strong> allowed here' in rv.data
 
     def test_delete(self):
+        self.app.post('/add', data=dict(
+            title='<Hello>', category='<Category>',
+            text='<strong>HTML</strong> allowed here'
+        ), follow_redirects=True)
+
         rm = self.app.post('/delete', data=dict(
             title='<Hello>', category='<Category>',
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
+
         assert b'No entries here so far' in rm.data
         assert b'&lt;Hello&gt;' not in rm.data
         assert b'<strong>HTML</strong> allowed here' not in rm.data
