@@ -26,6 +26,7 @@ class FlaskrTestCase(unittest.TestCase):
             title='<Hello>', category='<Category>',
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
+
         assert b'No entries here so far' not in rv.data
         assert b'&lt;Hello&gt;' in rv.data
         assert b'<strong>HTML</strong> allowed here' in rv.data
@@ -68,6 +69,15 @@ class FlaskrTestCase(unittest.TestCase):
             text='<strong>HTML</strong> allowed here'
         ), follow_redirects=True)
 
+        rv = self.app.post('/delete', data=dict(
+            title='<Hello>', category='<Category>',
+            text='<strong>HTML</strong> allowed here', id="1", edit="edit"
+        ), follow_redirects=True)
+
+        assert b'&lt;Hello&gt;' in rv.data
+        assert b'&lt;strong&gt;HTML&lt;/strong&gt; allowed here' in rv.data
+        assert b'&lt;Category&gt' in rv.data
+
         self.app.post('/update', data=dict(
             title='<Hello_edit>', category='<Category_edit>',
             text='<strong>HTML_edit</strong> allowed here', id="1"
@@ -82,8 +92,6 @@ class FlaskrTestCase(unittest.TestCase):
         assert b'&lt;Hello&gt;' not in rv.data
         assert b'<strong>HTML</strong> allowed here' not in rv.data
         assert b'&lt;Category&gt' not in rv.data
-
-        print(rv.data)
 
 
 if __name__ == '__main__':
